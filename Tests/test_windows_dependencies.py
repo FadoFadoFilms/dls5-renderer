@@ -19,6 +19,7 @@ class WindowsDependenciesTests(unittest.TestCase):
         self.assertIn('Find-Python313', self.source)
         self.assertIn('Find-MediaTools', self.source)
         self.assertIn('import tkinter', self.source)
+        self.assertIn('WindowsApps', self.source)
         self.assertIn('Manager\\fadoexr_manager.py', self.source)
         self.assertIn('if (-not $python -or -not $media)', self.source)
 
