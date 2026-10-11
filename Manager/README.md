@@ -5,8 +5,8 @@ This is the **first central desktop application** for the three existing compone
 ## Start on Windows
 
 1. Clone the complete [FadoFadoFilms/dls5-renderer](https://github.com/FadoFadoFilms/dls5-renderer) repository, selecting the `dev` branch while QA is underway.
-2. Install Python 3 (with its standard Tkinter GUI). For EXR/video operations, install FFmpeg **with FFprobe**, available on PATH.
-3. Double-click `START-FADOEXR-MANAGER.cmd` at the repository root (or run `py -3 Manager/fadoexr_manager.py`).
+2. Double-click **`START-FADOEXR-MANAGER.cmd`** at the repository root. The launcher checks for Python **3.13** (and Tkinter) plus FFmpeg/FFprobe with EXR, FFV1, zscale and tonemap support. If something is missing, it installs official WinGet packages, then launches the GUI.
+3. For manual setup or a forced FFmpeg update check, double-click **`Tools/SETUP-DEPENDENCIES.cmd`**. To see versions/status **without installing**, use **`Tools/CHECK-DEPENDENCIES.cmd`**. Requires `winget` (Microsoft App Installer) to install missing components. Logs are in `%LOCALAPPDATA%\FadoEXR\PipelineManager\dependency-logs`. See [Windows setup](../Tools/README-WINDOWS-SETUP.md).
 4. Choose the **root** of the existing Unity HDRP film project, **root** of the separate EXR Renderer Unity project, the capture output root used inside the FadoEXR capture window, and the desired managed player installation directory. Click **Save paths**.
 5. **Preview** and then **Update** each project's `Assets/FadoEXR`. The manager does not edit scenes or other project assets. Close/save Unity before copying scripts and reopen/allow compilation afterward.
 6. Click **Download / update renderer** to explicitly fetch the newest complete community player with the existing verified installer updater. No third-party renderer binaries are bundled with this public repository.
@@ -34,11 +34,11 @@ The manager's `Manager/` source, scripts and docs belong in this umbrella reposi
 ## Scriptable CLI (optional)
 
 ```powershell
-py -3 Manager/fadoexr_manager.py preview export 'D:\MyFilmUnity'
-py -3 Manager/fadoexr_manager.py install export 'D:\MyFilmUnity'
-py -3 Manager/fadoexr_manager.py install import 'D:\EXRRendererUnity'
-py -3 Manager/fadoexr_manager.py handoff 'D:\FadoEXR_TestShots\Shot1' 'D:\EXRRendererUnity'
-py -3 Manager/fadoexr_manager.py convert-exr 'D:\FadoEXR_TestShots\Shot1' --fps 24
+py -3.13 Manager/fadoexr_manager.py preview export 'D:\MyFilmUnity'
+py -3.13 Manager/fadoexr_manager.py install export 'D:\MyFilmUnity'
+py -3.13 Manager/fadoexr_manager.py install import 'D:\EXRRendererUnity'
+py -3.13 Manager/fadoexr_manager.py handoff 'D:\FadoEXR_TestShots\Shot1' 'D:\EXRRendererUnity'
+py -3.13 Manager/fadoexr_manager.py convert-exr 'D:\FadoEXR_TestShots\Shot1' --fps 24
 ```
 
 `Tools/Install-FadoEXR.ps1` now calls the manager's safe install command as a compatibility wrapper; use `-Role Import` for the importer.

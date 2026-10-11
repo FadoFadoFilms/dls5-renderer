@@ -15,3 +15,5 @@
 10. **Player update + render acceptance:** Test PowerShell updater and manifest verification on Windows, lossless FFV1 input, parser of summary.json, and only stage genuine neural output. Compare extracted PNGs to source reference with a colour chart.
 11. **Distribution:** Build/code-sign a standalone Windows app/installer after QA (Python 3 is currently required) and consider a supported plugin architecture for optional GUI automation without changing source Unity scenes.
 12. **Scale:** Replace 240-frame capped short-shot importer with on-disk streaming, a job queue, progress/pause/retry and editable shot metadata. Add robust handoff-on-export when the app is not open via a user-approved helper service if needed.
+
+8. **Windows dependency bootstrap QA:** run the new setup/check CMD files on the target Windows PC, confirm winget-installed Python 3.13 and full FFmpeg/FFprobe are discoverable immediately, then launch the Tkinter manager. Validate offline/no-winget and existing custom-FFmpeg scenarios. Static source checks do not replace this real Windows test.

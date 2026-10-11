@@ -1,5 +1,13 @@
 # Change log
 
+## 2026-10-11 - v0.3.1 Windows prerequisite bootstrap (dev)
+
+- Windows launcher now checks and selects Python **3.13.x** + Tkinter and the matching FFmpeg/FFprobe binaries before starting Pipeline Manager; other Python installations are not replaced.
+- Added opt-in WinGet dependency installer for missing Python 3.13 and full `Gyan.FFmpeg`, plus weekly upgrade checks **only** for WinGet-managed Gyan FFmpeg. Custom FFmpeg installs remain untouched.
+- Added compatibility validation for EXR decoding, FFV1 encoding, `zscale`, `tonemap`, and FFprobe; process-local PATH adjustment and logs under LocalAppData.
+- Added `Tools/SETUP-DEPENDENCIES.cmd` (install/update now), `Tools/CHECK-DEPENDENCIES.cmd` (read-only) and setup guide.
+- Six new static regression tests passed; actual WinGet installation and Windows GUI launch are **not yet tested on the user's PC**.
+
 ## 0.2.0 (2026-10-11)
 - Built FFmpeg EXR->Rec709 FFV1 bridge with continuity and output verification, no overwrites.
 - Added PlayableDirector manual frame sampling option and start frame in Unity film capture.

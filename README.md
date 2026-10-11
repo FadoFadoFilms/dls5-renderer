@@ -4,6 +4,12 @@ Experimental **Unity 6 HDRP → DLSS 5 community video player → Unity HDRP** o
 
 > **Status: v0.3 manager source prototype — not compiled/tested in a Unity 6.4 HDRP Editor.** The third-party DLSS neural renderer/runtime is not included. The included harness can download it separately from its upstream releases after user approval. This repository is public; do not commit film footage, paid assets or credentials.
 
+## Windows quick start
+
+On Windows 10/11, double-click **`START-FADOEXR-MANAGER.cmd`** from a full `dev` checkout. It verifies **Python 3.13 + Tkinter**, `ffmpeg`, `ffprobe`, and the media filters/codecs needed by this pipeline; missing dependencies are installed through `winget`. It checks for updates to a winget-managed FFmpeg once per week. Other Python versions and custom FFmpeg installations remain unchanged.
+
+Use **`Tools/SETUP-DEPENDENCIES.cmd`** to install/check now (including a fresh FFmpeg update check), or **`Tools/CHECK-DEPENDENCIES.cmd`** for a read-only status check. Install logs stay under `%LOCALAPPDATA%\FadoEXR\PipelineManager\dependency-logs`. See [Windows setup instructions](Tools/README-WINDOWS-SETUP.md). **These Windows scripts have not yet been exercised on the user's PC.**
+
 ## Three components
 
 | Directory | Purpose |

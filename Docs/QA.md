@@ -35,3 +35,11 @@
 - Unit tests: processed frame count/name mismatch rejected, repeat handoff refuses overwrite, neural render summary checked for positive Feature 18 evidence.
 - Unit tests: linked destination folder refused, C# handoff entrypoint and root ignore rules present.
 - **NOT RUN:** GUI on Windows, user-project Git diff validation, Unity 6.4 C# compile/Play Mode, live auto handoff watcher, latest third-party player runtime install and GPU render. Do not label the complete pipeline fully tested.
+
+## v0.3.1 Windows prerequisite setup verification (pending Windows PC)
+
+- **PASS (static, non-Windows):** 6 tests covering package IDs, launcher flags, required codecs/filters, diagnostic modes and safe update constraints.
+- **NOT RUN:** Windows PowerShell script execution / WinGet missing-Python 3.13 install / FFmpeg update / PATH refresh / GUI startup.
+- On Windows, run `Tools/CHECK-DEPENDENCIES.cmd` first and save status, then run `Tools/SETUP-DEPENDENCIES.cmd` if required. Verify actual `python 3.13`, Tkinter import, FFmpeg version/path, FFprobe path and `zscale/tonemap` presence.
+- Re-open `START-FADOEXR-MANAGER.cmd` and confirm the Manager UI starts without a manual Python/FFmpeg PATH change.
+- **Stop:** a failed WinGet install, FFprobe mismatch, nonfunctional `zscale`, multiple competing `ffmpeg.exe` commands, or upgrade accidentally altering an existing custom FFmpeg. Preserve logs from `%LOCALAPPDATA%\FadoEXR\PipelineManager\dependency-logs`.
