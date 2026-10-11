@@ -2,7 +2,7 @@
 
 Experimental **Unity 6 HDRP → DLSS 5 community video player → Unity HDRP** offline processing pipeline, including an RTX 2060 6 GB compatibility harness.
 
-> **Status: v0.2 source prototype — not compiled/tested in a Unity 6.4 HDRP Editor.** The third-party DLSS neural renderer/runtime is not included. The included harness can download it separately from its upstream releases after user approval. This repository is public; do not commit film footage, paid assets or credentials.
+> **Status: v0.3 manager source prototype — not compiled/tested in a Unity 6.4 HDRP Editor.** The third-party DLSS neural renderer/runtime is not included. The included harness can download it separately from its upstream releases after user approval. This repository is public; do not commit film footage, paid assets or credentials.
 
 ## Three components
 
@@ -14,7 +14,13 @@ Experimental **Unity 6 HDRP → DLSS 5 community video player → Unity HDRP** o
 
 `Tools/` contains the lossless EXR → FFV1 player interchange and video → PNG16 conversion; `Docs/` contains architecture, QA and next steps. Each Unity folder is an **Assets package**, not a complete new Unity project.
 
-## First verified workflow to attempt
+## Desktop Pipeline Manager (new experimental v0.3)
+
+Run `START-FADOEXR-MANAGER.cmd` on Windows with Python 3 installed. It opens a desktop control panel to register **two separate Unity projects**, preview and safely update each `Assets/FadoEXR`, opt in to downloading the newest complete community player, convert EXR to lossless FFV1, run the diagnostic neural player, and stage completed shot grades and verified processed frames for the EXR Renderer. The importer now has a **Load latest Pipeline Manager handoff** button. Source shot media is *not* silently copied into Unity Assets, and the two Unity projects remain independent Git repositories.
+
+**Read [Manager/README.md](Manager/README.md) for Windows setup, safety and current limits.** The initial manager is source-only (not an `.exe`), and Unity/Windows end-to-end QA is still required.
+
+## First workflow to test
 
 1. In your film project, install `1 Unity Export/Assets/FadoEXR`; use **Tools → Fado Fado → EXR Roundtrip → 1 - Capture film**. Capture one frame first.
 2. Convert its new shot folder using `Tools/EXR-To-Player.cmd` (requires Python 3, FFmpeg/FFprobe). Keep the untouched EXR and reference.

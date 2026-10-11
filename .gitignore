@@ -73,3 +73,10 @@ sysinfo.txt
 **/rtx2060-installer-source/*.obj
 **/rtx2060-installer-source/*.lib
 **/rtx2060-installer-source/*.dummy.dll
+
+# Pipeline Manager's external Unity handoff/staging outputs (nested projects)
+**/.fadoexr-inbox/
+**/.fadoexr-stage-*/
+**/.fadoexr-rollback-*/
+**/Player_Output/
+**/ProcessedFrames/

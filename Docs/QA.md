@@ -27,3 +27,11 @@
 7. Save Unity Console logs and `capture-report.txt`/`replay-report.txt` when reporting a bug.
 
 **Stop conditions:** compile errors; output count mismatch; sample time mismatch; unexpected frame flip; clipped highlights/tonemapping; DLSS runtime bypass/Feature-18 skipped.
+
+## v0.3 Manager local validation (source only)
+
+- Unit tests: exporter/importer packages remain separate, nested project `Assets/FadoEXR` preview/install, preserved `.meta` and unmanaged user files, app-data backup, and no-op repeat update.
+- Unit tests: incomplete/error captures refused; valid grade handoff keeps raw EXRs outside importer project; `.fadoexr-inbox/.gitignore` auto-created.
+- Unit tests: processed frame count/name mismatch rejected, repeat handoff refuses overwrite, neural render summary checked for positive Feature 18 evidence.
+- Unit tests: linked destination folder refused, C# handoff entrypoint and root ignore rules present.
+- **NOT RUN:** GUI on Windows, user-project Git diff validation, Unity 6.4 C# compile/Play Mode, live auto handoff watcher, latest third-party player runtime install and GPU render. Do not label the complete pipeline fully tested.

@@ -1,11 +1,19 @@
-param([Parameter(Mandatory=$true)][string]$UnityProject)
-$ErrorActionPreference = 'Stop'
-$source = Join-Path (Split-Path $PSScriptRoot -Parent) 'Assets\FadoEXR'
-$project = [IO.Path]::GetFullPath($UnityProject)
-if(-not (Test-Path (Join-Path $project 'Assets'))) { throw 'This is not a Unity project: Assets folder missing.' }
-if(-not (Test-Path (Join-Path $project 'ProjectSettings'))) { throw 'This is not a Unity project: ProjectSettings missing.' }
-$destination = Join-Path $project 'Assets\FadoEXR'
-if(Test-Path $destination) { throw 'FadoEXR is already present; refusing to overwrite existing scripts. Back up or remove that folder first.' }
-Copy-Item -LiteralPath $source -Destination $destination -Recurse
-Write-Host "Copied scripts into $destination"
-Write-Host 'Open Unity; use Tools > Fado Fado > EXR Roundtrip after compilation.'
+# Backward-compatible command line installer wrapper. Prefer the manager GUI.
+# Run: .\Tools\Install-FadoEXR.ps1 -UnityProject 'D:\MyUnityFilm' -Role Export
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)][string]$UnityProject,
+    [ValidateSet('Export','Import')][string]$Role='Export'
+)
+$ErrorActionPreference='Stop'
+$root = Split-Path $PSScriptRoot -Parent
+$manager = Join-Path $root 'Manager\fadoexr_manager.py'
+if(-not (Test-Path -LiteralPath $manager -PathType Leaf)) { throw 'Manager source missing from repository.' }
+$python = Get-Command py -ErrorAction SilentlyContinue
+if($null -ne $python) {
+    & $python.Source -3 $manager install $Role.ToLowerInvariant() $UnityProject
+} else {
+    $python = Get-Command python -ErrorAction Stop
+    & $python.Source $manager install $Role.ToLowerInvariant() $UnityProject
+}
+if($LASTEXITCODE -ne 0) { throw 'Unity package update failed; read manager output.' }

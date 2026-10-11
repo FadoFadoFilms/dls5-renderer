@@ -10,3 +10,13 @@
 
 ## 0.1.0
 - Initial Clean/Reference EXR HDRP capture, post-processing JSON and static colour replay prototype.
+
+## 2026-10-11 - v0.3 Pipeline Manager (on dev)
+
+- Added first Windows-friendly Python/Tkinter **FadoEXR Pipeline Manager** with persistent local settings, project folder picker, install preview, backups, and safe exporter/importer package updates into separate Unity Git checkouts. No automatic Git commits.
+- Added explicit install/update of the newest *complete* third-party community DLSS player using existing release verifier and PowerShell RTX 2060 diagnostic render harness; neural binaries are not bundled.
+- Added automatic completed-capture detection and importer handoff: valid per-frame grade JSON staged under `.fadoexr-inbox` outside Unity Assets; generated files ignored by that project's local `.gitignore`.
+- Added `Load latest Pipeline Manager handoff` in Unity importer to consume staged grades and optionally processed PNG frames. Clears previously loaded frame list on shot changes to avoid grade/image mismatch; importer-generated Volume/PNG Assets now receive their own nested .gitignore to avoid accidental commit in its independent Git repository.
+- Added strict FFV1-to-player and verified-render-to-PNG16 UI steps, with an explicit unverified manual-video override.
+- Fixed obsolete `Tools/Install-FadoEXR.ps1` to call the new safe installer with Export/Import roles.
+- Local Python regression tests passed. Unity HDRP compile, Windows GUI, live PowerShell player update/render and colour fidelity remain **unverified**.

@@ -26,6 +26,24 @@ namespace FadoEXR
         string status="Choose a saved grade snapshot and frames from the DLSS output.";
         Vector2 scroll;
 
+        // The Pipeline Manager writes outside Assets so large shot data is not
+        // imported into Unity (or accidentally committed) until the user asks.
+        [Serializable] sealed class PipelineLatest
+        {
+            public int schemaVersion;
+            public string jobId;
+            public string manifest;
+        }
+        [Serializable] sealed class PipelineHandoff
+        {
+            public int schemaVersion;
+            public string jobId;
+            public string shotName;
+            public int frameCount;
+            public string gradeFolder;
+            public string processedFrames;
+        }
+
         [MenuItem("Tools/Fado Fado/EXR Roundtrip/2 - Restore in EXR Renderer")]
         static void ShowWindow(){GetWindow<ReplayWindow>("EXR Renderer");}
         void OnInspectorUpdate(){Repaint();}
@@ -38,6 +56,8 @@ namespace FadoEXR
             if(GUILayout.Button("Create replay camera"))CreateCamera();
             EditorGUILayout.Space();
             GUILayout.Label("1. Import recorded post-processing",EditorStyles.boldLabel);
+            if(GUILayout.Button("Load latest Pipeline Manager handoff",GUILayout.Height(30)))
+                LoadLatestPipelineHandoff();
             if(GUILayout.Button("Load grade_000000.json"))
             {
                 string p=EditorUtility.OpenFilePanel("Camera grade JSON", "", "json");
@@ -112,7 +132,10 @@ namespace FadoEXR
         void LoadGradeFolder()
         {
             var folder=EditorUtility.OpenFolderPanel("Captured Grade folder","","");
-            if(string.IsNullOrEmpty(folder))return;
+            if(!string.IsNullOrEmpty(folder))LoadGradeFolderFromPath(folder);
+        }
+        bool LoadGradeFolderFromPath(string folder)
+        {
             try
             {
                 var files=Directory.GetFiles(folder,"grade_*.json")
@@ -122,10 +145,55 @@ namespace FadoEXR
                 for(int i=0;i<loaded.Count;i++)
                     if(loaded[i].frameIndex!=i)throw new IOException("Missing grade frame "+i);
                 grades=loaded;grade=loaded[0];gradePath=files[0];
+                frames.Clear(); // Never mix a new shot's grade with the previous shot's images.
                 safeProfiles.Clear();fullProfiles.Clear();reuseStaticGrade=false;
                 status="Loaded "+loaded.Count+" distinct frame grades.";
+                return true;
             }
-            catch(Exception e){EditorUtility.DisplayDialog("Load Grades error",e.ToString(),"OK");}
+            catch(Exception e){EditorUtility.DisplayDialog("Load Grades error",e.ToString(),"OK");return false;}
+        }
+        static string ValidatedInboxPath(string inbox,string relative)
+        {
+            if(string.IsNullOrEmpty(relative)||Path.IsPathRooted(relative)||relative.Contains("..")||relative.Contains(":"))
+                throw new IOException("Invalid Pipeline Manager inbox path: "+relative);
+            string root=Path.GetFullPath(inbox).TrimEnd(Path.DirectorySeparatorChar,Path.AltDirectorySeparatorChar)+Path.DirectorySeparatorChar;
+            string full=Path.GetFullPath(Path.Combine(inbox,relative));
+            if(!full.StartsWith(root,StringComparison.OrdinalIgnoreCase))
+                throw new IOException("Inbox path escapes import project: "+relative);
+            return full;
+        }
+        void LoadLatestPipelineHandoff()
+        {
+            try
+            {
+                string inbox=Path.Combine(Directory.GetCurrentDirectory(),".fadoexr-inbox");
+                string latestPath=Path.Combine(inbox,"latest.json");
+                if(!File.Exists(latestPath))
+                    throw new IOException("No staged shot found. Open FadoEXR Pipeline Manager and use Stage selected shot.");
+                var latest=JsonUtility.FromJson<PipelineLatest>(File.ReadAllText(latestPath));
+                if(latest==null||latest.schemaVersion!=1)throw new IOException("Unsupported latest.json format.");
+                string handoffPath=ValidatedInboxPath(inbox,latest.manifest);
+                var handoff=JsonUtility.FromJson<PipelineHandoff>(File.ReadAllText(handoffPath));
+                if(handoff==null||handoff.schemaVersion!=1||handoff.jobId!=latest.jobId||handoff.frameCount<1||handoff.frameCount>240)
+                    throw new IOException("Invalid or mismatched pipeline handoff.");
+                if(!LoadGradeFolderFromPath(ValidatedInboxPath(inbox,handoff.gradeFolder)))return;
+                if(grades.Count!=handoff.frameCount)throw new IOException("Frame/grade count mismatch in handoff.");
+                if(!string.IsNullOrEmpty(handoff.processedFrames))
+                {
+                    var processed=ValidatedInboxPath(inbox,handoff.processedFrames);
+                    if(!EditorUtility.DisplayDialog("Import processed frames?",
+                        "Shot: "+handoff.shotName+"\n"+handoff.frameCount+" frames staged. Import PNG images into Assets/FadoEXRImported now?",
+                        "Import", "Grades only"))
+                    {
+                        status="Staged grades loaded for "+handoff.shotName+". Processed frames not imported yet.";
+                        return;
+                    }
+                    ImportFrames(processed);
+                    status="Loaded latest Pipeline Manager handoff: "+handoff.shotName+". Create FULL + SAFE profiles next.";
+                }
+                else status="Loaded latest captured grades: "+handoff.shotName+". Awaiting DLSS processing.";
+            }
+            catch(Exception e){EditorUtility.DisplayDialog("Pipeline Manager handoff error",e.Message,"OK");}
         }
         void CreateCamera()
         {
@@ -139,6 +207,15 @@ namespace FadoEXR
             Selection.activeGameObject=go;
             status="Replay camera created; verify its Custom Pass and Post Processing Frame Settings.";
         }
+        static void ProtectGeneratedAssetsFromGit(string assetsPath)
+        {
+            // The importer might be a DIFFERENT Git repo from the umbrella source.
+            // Keep its generated frames and volume assets out of that repository.
+            string dir=Path.Combine(Directory.GetCurrentDirectory(),assetsPath);
+            Directory.CreateDirectory(dir);
+            string ignore=Path.Combine(dir,".gitignore");
+            if(!File.Exists(ignore))File.WriteAllText(ignore,"*\n!.gitignore\n");
+        }
         void CreateProfiles()
         {
             if(!camera)CreateCamera();
@@ -146,6 +223,7 @@ namespace FadoEXR
             {
                 if(!AssetDatabase.IsValidFolder("Assets/FadoEXRGenerated"))
                     AssetDatabase.CreateFolder("Assets","FadoEXRGenerated");
+                ProtectGeneratedAssetsFromGit("Assets/FadoEXRGenerated");
                 string basename=Path.GetFileNameWithoutExtension(gradePath).Replace(" ","_");
                 string full=AssetDatabase.GenerateUniqueAssetPath("Assets/FadoEXRGenerated/"+basename+"_FULL.asset");
                 string col=AssetDatabase.GenerateUniqueAssetPath("Assets/FadoEXRGenerated/"+basename+"_SAFE.asset");
@@ -185,7 +263,10 @@ namespace FadoEXR
         void ImportFrames()
         {
             string path=EditorUtility.OpenFolderPanel("PNG / EXR frames from DLSS output","","");
-            if(string.IsNullOrEmpty(path))return;
+            if(!string.IsNullOrEmpty(path))ImportFrames(path);
+        }
+        void ImportFrames(string path)
+        {
             try
             {
                 var files=Directory.GetFiles(path).Where(f=>f.EndsWith(".png",StringComparison.OrdinalIgnoreCase)||
@@ -193,6 +274,7 @@ namespace FadoEXR
                     .OrderBy(f=>Path.GetFileName(f),StringComparer.OrdinalIgnoreCase).ToArray();
                 if(files.Length<1||files.Length>240)throw new IOException("Choose 1-240 numbered PNG/EXR frames for the test.");
                 if(!AssetDatabase.IsValidFolder("Assets/FadoEXRImported"))AssetDatabase.CreateFolder("Assets","FadoEXRImported");
+                ProtectGeneratedAssetsFromGit("Assets/FadoEXRImported");
                 string stamp="Frames_"+DateTime.UtcNow.ToString("yyyyMMdd_HHmmss_fff");
                 AssetDatabase.CreateFolder("Assets/FadoEXRImported",stamp);
                 var list=new List<Texture2D>();
