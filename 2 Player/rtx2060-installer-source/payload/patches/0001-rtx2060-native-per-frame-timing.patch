@@ -1,0 +1,37 @@
+diff --git a/src/OfflineNeuralRenderer.cpp b/src/OfflineNeuralRenderer.cpp
+--- a/src/OfflineNeuralRenderer.cpp
++++ b/src/OfflineNeuralRenderer.cpp
+@@ -2569,6 +2569,24 @@ void ReportStageTimings(EncoderKind kind, const StageTimers& stages,
+     // same rate. They should agree; a gap is work no stage is counting.
+     << " ms, measured loop " << Mean(attempt.stages.loop)
+     << " ms." << detail;
+     LOG(line.str());
++
++    // RTX 2060 offline experiment: preserve the native sample for every
++    // captured frame instead of only the aggregate p50/p95/max receipt data.
++    // The prefix is deliberately machine-parseable by the companion harness.
++    const auto& s = attempt.stages;
++    const size_t n = std::min({attempt.neuralGpuMs.size(), s.read.size(), s.guide.size(),
++                               s.render.size(), s.eval.size(), s.write.size(), s.latency.size()});
++    for (size_t i = 0; i < n; ++i) {
++        LOG("RTX2060_FRAME_TIMING index=" << i
++            << " neuralGpuMs=" << attempt.neuralGpuMs[i]
++            << " readMs=" << s.read[i]
++            << " guideMs=" << s.guide[i]
++            << " renderMs=" << s.render[i]
++            << " evalMs=" << s.eval[i]
++            << " writeMs=" << s.write[i]
++            << " latencyMs=" << s.latency[i]);
++    }
+ }
+@@ -2713,7 +2731,9 @@ NeuralRenderTiming SummarizeTiming(AttemptResult& attempt, uint64_t peakLocalVra
+     timing.peakLocalVramMiB = peakLocalVramMiB;
+     timing.samples = attempt.neuralGpuMs.size();
+     if (timing.samples == 0) return timing;
+-    auto& samples = attempt.neuralGpuMs;
++    // Keep the original vector in frame order so the optional per-frame
++    // diagnostic log remains meaningful even if summary generation runs first.
++    auto samples = attempt.neuralGpuMs;
+     std::sort(samples.begin(), samples.end());
+     const auto quantile = [&](double q) {
+         const size_t index = static_cast<size_t>(std::ceil(q * double(samples.size() - 1)));

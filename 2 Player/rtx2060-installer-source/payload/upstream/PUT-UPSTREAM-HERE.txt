@@ -1,0 +1,19 @@
+Place the contents of the COMPLETE upstream DLSS 5 Video Player Windows package here.
+
+Expected shape:
+
+upstream\
+  DLSSVideoPlayer.exe
+  verify_package.ps1
+  neural-runtime\
+    NeuralWorker.exe
+    ReShade.ini
+    dxgi.dll
+    renodx-dlss5.addon64
+    nvngx_dlssnr.dll
+    ...
+
+Target tested by this harness:
+2600th/dlss5-video-player v0.26.2 (2026-09-26)
+
+Do not use GitHub's auto-generated source ZIP as the runtime. The upstream project says it does not contain the experimental neural runtime.

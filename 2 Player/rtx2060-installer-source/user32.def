@@ -1,0 +1,16 @@
+LIBRARY USER32.dll
+EXPORTS
+  MessageBoxW=USER32.MessageBoxW
+  RegisterClassW=USER32.RegisterClassW
+  CreateWindowExW=USER32.CreateWindowExW
+  DefWindowProcW=USER32.DefWindowProcW
+  ShowWindow=USER32.ShowWindow
+  UpdateWindow=USER32.UpdateWindow
+  GetMessageW=USER32.GetMessageW
+  TranslateMessage=USER32.TranslateMessage
+  DispatchMessageW=USER32.DispatchMessageW
+  PostQuitMessage=USER32.PostQuitMessage
+  DestroyWindow=USER32.DestroyWindow
+  SendMessageW=USER32.SendMessageW
+  LoadCursorW=USER32.LoadCursorW
+  GetSystemMetrics=USER32.GetSystemMetrics
