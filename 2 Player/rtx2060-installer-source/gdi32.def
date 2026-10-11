@@ -1,0 +1,5 @@
+LIBRARY GDI32.dll
+EXPORTS
+  GetStockObject=GDI32.GetStockObject
+  CreateFontW=GDI32.CreateFontW
+  DeleteObject=GDI32.DeleteObject

@@ -1,0 +1,15 @@
+LIBRARY KERNEL32.dll
+EXPORTS
+  ExitProcess=KERNEL32.ExitProcess
+  GetEnvironmentVariableW=KERNEL32.GetEnvironmentVariableW
+  CreateDirectoryW=KERNEL32.CreateDirectoryW
+  GetFileAttributesW=KERNEL32.GetFileAttributesW
+  CreateFileW=KERNEL32.CreateFileW
+  WriteFile=KERNEL32.WriteFile
+  CloseHandle=KERNEL32.CloseHandle
+  DeleteFileW=KERNEL32.DeleteFileW
+  RemoveDirectoryW=KERNEL32.RemoveDirectoryW
+  GetModuleFileNameW=KERNEL32.GetModuleFileNameW
+  CopyFileW=KERNEL32.CopyFileW
+  GetCommandLineW=KERNEL32.GetCommandLineW
+  GetModuleHandleW=KERNEL32.GetModuleHandleW

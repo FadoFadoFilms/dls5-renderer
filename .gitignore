@@ -1,0 +1,75 @@
+# DLS5 Render - umbrella repository
+# Put this ONE file at the repository root, beside:
+#   1 Unity Export/
+#   2 Player/
+#   3 Import/
+#
+# All rules below apply to nested Unity projects as well as a Unity project
+# at the repository root. Source assets and .meta files remain tracked.
+
+# Unity-generated project state, caches, and capture/build output
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Ll]ogs/
+**/[Uu]ser[Ss]ettings/
+**/[Mm]emoryCaptures/
+**/[Rr]ecordings/
+**/[Bb]uild/
+**/[Bb]uilds/
+
+# Common editor/IDE-generated files (at any depth)
+**/.vs/
+**/.idea/
+**/.gradle/
+**/.vscode/
+*.csproj
+*.sln
+*.slnx
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.opendb
+*.VC.db
+*.VC.opendb
+
+# OS-specific/local temporary files
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
+*.tmp
+sysinfo.txt
+
+# Generated FadoEXR test captures; store chosen reference assets elsewhere
+**/FadoEXR_TestShots/
+**/FadoEXR_Captures/
+**/EXR_Capture/
+
+# Intentionally NOT ignored:
+#   **/Assets/                source project assets
+#   **/Packages/              Unity package manifests / lockfiles
+#   **/ProjectSettings/       Unity configuration
+#   *.meta                    Unity asset GUIDs
+#   *.cs, *.shader, *.json    source and interchange specifications
+#   *.exe, *.zip              tracked release artifacts when intended
+#
+# If generated folders have already been committed, .gitignore will not
+# untrack them. Use: git rm -r --cached --ignore-unmatch -- '<actual/path/to/Library>'
+
+# Generated EXR round-trip media and imported replay assets
+**/FadoEXR_Regraded/
+**/Player_Input/
+**/Assets/FadoEXRImported/
+**/Assets/FadoEXRGenerated/
+**/upstream-backups/
+**/neural-runtime/
+
+# Build-generated installer C/binaries and object files
+**/rtx2060-installer-source/installer.c
+**/rtx2060-installer-source/*.obj
+**/rtx2060-installer-source/*.lib
+**/rtx2060-installer-source/*.dummy.dll
